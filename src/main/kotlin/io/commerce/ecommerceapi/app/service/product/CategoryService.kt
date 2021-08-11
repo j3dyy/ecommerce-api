@@ -25,12 +25,12 @@ class CategoryService(
      * also creating translation @see createOrUpdateTranslations(category,addCategory) method
      */
     fun add(addCategory: AddCategory){
-        var category = Category();
-        category.version = 1;
+        var category = Category()
+        category.version = 1
         addCategory.id?.let { id ->
             categoryRepository.findById(id).ifPresent { cat ->
                 category = cat
-                category.version = cat.version + 1;
+                category.version = cat.version + 1
             }
         }
         repository.save(category)

@@ -1,31 +1,39 @@
 package io.commerce.ecommerceapi.app.models.product
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import io.commerce.ecommerceapi.core.db.LocalizedId
 import io.commerce.ecommerceapi.core.db.Model
 import io.commerce.ecommerceapi.core.db.Translatable
 import org.hibernate.annotations.Cache
 import org.hibernate.annotations.CacheConcurrencyStrategy
 import javax.persistence.*
 
+enum class AttributeTypes{
+    TEXT_FIELD,DATE_FIELD,LONGTEXT_FIELD,COLOR_PICKER,DATE_PICKER,
+    DATETIME_PICKER,CUSTOM_FIELD
+}
+
 @Entity
-@Table(name = "categories")
-class Category(
+@Table(name = "attributes")
+class Attribute(
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    var type: AttributeTypes = AttributeTypes.CUSTOM_FIELD,
 
     @OneToMany(
-        mappedBy = "category",
+        mappedBy = "attribute",
         cascade = [CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH]
     )
     @MapKey(name = "localizedId.locale")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-    var localizations: Map<String,CategoryTranslation> = mutableMapOf()
+    var localizations: Map<String,AttributeTranslations> = mutableMapOf()
 
-): Model<CategoryTranslation>() {
+) : Model<AttributeTranslations>(){
 
-    override fun getTranslations(): Map<String, CategoryTranslation> = localizations
+    override fun getTranslations(): Map<String, AttributeTranslations> = localizations
 
     override fun setTranslations(locale: String, translatable: Translatable) {
-        this.localizations += mutableMapOf(locale to translatable as CategoryTranslation)
+        this.localizations += mutableMapOf(locale to translatable as AttributeTranslations)
     }
 
     override fun removeTranslation(locale: String) {
@@ -34,17 +42,19 @@ class Category(
 }
 
 @Entity
-@Table(name = "category_translations")
+@Table(name = "attribute_translations")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-class CategoryTranslation(
+class AttributeTranslations(
     @ManyToOne
     @MapsId("id")
     @JoinColumn(name = "id")
     @JsonIgnore
-    var category: Category,
+    var attribute: Attribute,
+
     var name: String,
     var description: String,
-): Translatable() {
 
+): Translatable(){
+    companion object
 }
 

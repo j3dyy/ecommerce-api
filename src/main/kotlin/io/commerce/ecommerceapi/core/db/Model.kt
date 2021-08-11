@@ -1,14 +1,24 @@
 package io.commerce.ecommerceapi.core.db
 
+import io.commerce.ecommerceapi.app.models.product.AttributeTranslations
+import org.hibernate.annotations.Cache
+import org.hibernate.annotations.CacheConcurrencyStrategy
 import java.io.Serializable
 import java.sql.Timestamp
 import javax.persistence.*
+
+/**
+ * @author jedy
+ */
 
 @MappedSuperclass
 open class EntityModel(
      @Id
      @GeneratedValue(strategy = GenerationType.IDENTITY)
      var id: Long = 1L,
+     var created_at: Timestamp = Timestamp(System.currentTimeMillis()),
+     var updated_at: Timestamp = Timestamp(System.currentTimeMillis()),
+     var deleted_at: Timestamp? = null
 )
 
 @MappedSuperclass
@@ -17,19 +27,24 @@ open class Sortable(
 ): EntityModel()
 
 @MappedSuperclass
-open class Model (
+abstract class Model<E: Translatable> (
+     @Version
+     var version: Int = 1,
 
-     var created_at: Timestamp = Timestamp(System.currentTimeMillis()),
-     var updated_at: Timestamp = Timestamp(System.currentTimeMillis()),
-     var deleted_at: Timestamp? = null
-): Sortable() {
+): Sortable(){
+     abstract fun getTranslations(): Map<String,E>
+     abstract fun setTranslations(locale: String, translatable: Translatable)
+     abstract fun removeTranslation(locale: String)
 }
+
 
 @MappedSuperclass
 open class Translatable(
      @EmbeddedId
      var localizedId: LocalizedId = LocalizedId("ka")
-) {}
+) {
+
+}
 
 @Embeddable
 class LocalizedId(
@@ -59,5 +74,4 @@ class LocalizedId(
           } else if (id != other.id) return false
           return true
      }
-
 }

@@ -12,6 +12,8 @@ open class CrudController<S: Servicable<E>, E>(
     @GetMapping
     fun list(@Valid @RequestBody pagingAndSorting: PagingSupport?) = service.all(pagingAndSorting)
 
+    @GetMapping("/{id}")
+    fun show(@PathVariable id: Long) = service.findById(id)
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long) = service.remove(id)
