@@ -10,9 +10,7 @@ import javax.validation.constraints.Size
 @Entity
 @Table(
     name = "users",
-    uniqueConstraints = arrayOf(
-        UniqueConstraint(columnNames = arrayOf("email", "username"))
-    )
+    uniqueConstraints = [UniqueConstraint(columnNames = arrayOf("email", "username"))]
 )
 class User (
     var email : String,

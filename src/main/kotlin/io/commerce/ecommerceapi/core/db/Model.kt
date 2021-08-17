@@ -1,8 +1,6 @@
 package io.commerce.ecommerceapi.core.db
 
-import io.commerce.ecommerceapi.app.models.product.AttributeTranslations
-import org.hibernate.annotations.Cache
-import org.hibernate.annotations.CacheConcurrencyStrategy
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.io.Serializable
 import java.sql.Timestamp
 import javax.persistence.*
@@ -19,12 +17,13 @@ open class EntityModel(
      var created_at: Timestamp = Timestamp(System.currentTimeMillis()),
      var updated_at: Timestamp = Timestamp(System.currentTimeMillis()),
      var deleted_at: Timestamp? = null
-)
+): Serializable
 
 @MappedSuperclass
 open class Sortable(
      var sort: Int? = 0
 ): EntityModel()
+
 
 @MappedSuperclass
 abstract class Model<E: Translatable> (
@@ -32,8 +31,10 @@ abstract class Model<E: Translatable> (
      var version: Int = 1,
 
 ): Sortable(){
+
+     @JsonIgnore
      abstract fun getTranslations(): Map<String,E>
-     abstract fun setTranslations(locale: String, translatable: Translatable)
+     abstract fun setTranslations(locale: String, translatable: E)
      abstract fun removeTranslation(locale: String)
 }
 

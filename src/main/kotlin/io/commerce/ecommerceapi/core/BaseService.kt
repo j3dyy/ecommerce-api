@@ -4,8 +4,8 @@ import io.commerce.ecommerceapi.app.payload.request.PagingSupport
 import io.commerce.ecommerceapi.core.db.EntityModel
 import io.commerce.ecommerceapi.core.db.Model
 import io.commerce.ecommerceapi.core.db.Translatable
+import io.commerce.ecommerceapi.core.io.Request
 import io.commerce.ecommerceapi.core.io.TranslatableRequest
-import io.commerce.ecommerceapi.utils.notNull
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -13,9 +13,9 @@ import org.springframework.data.repository.PagingAndSortingRepository
 import java.util.*
 import javax.transaction.Transactional
 
-open class BaseService< R:PagingAndSortingRepository<E,Long>, E: EntityModel>(
-    protected open val repository: R
-): Servicable<E> {
+abstract class BaseService< R:PagingAndSortingRepository<E,Long>, E: EntityModel, T:Translatable>(
+    protected open val repository: R,
+): Servicable<E,T> {
 
     override fun save(obj: E){
         repository.save(obj)
@@ -48,32 +48,40 @@ open class BaseTranslatableService<
         R: PagingAndSortingRepository<E,Long>, E:Model<T>,
 >(
     override val repository: R
-) : BaseService<R,E>(repository){
+) : BaseService<R,E,T>(repository) {
 
     @Transactional
-    open fun add(request: TranslatableRequest<E,T>){
-        var entity = request.fill()
-        var translation: Translatable? = null
+    open fun add(request: TranslatableRequest<E, T>){
+        var entity: E = request.fill(null)
 
-        request.id?.let {
-            repository.findById(request.id).ifPresent {
-                entity = it
-                if (entity.getTranslations()[request.locale] != null){
-                    entity.removeTranslation(request.locale)
-                }
+        request.id?.let { id ->
+            repository.findById(id).ifPresent {
+                entity = request.fill(it)
             }
         }
-        translation = request.fillTranslatable(entity)
-        entity.setTranslations(request.locale, translation)
-        println(entity.getTranslations())
+        entity = updateTranslations(entity,request)
         repository.save(entity)
+    }
+
+
+    private fun updateTranslations(entity: E, request: TranslatableRequest<E,T>): E{
+        var translation = request.fillTranslatable(entity)
+
+        if (translation != null){
+            if (entity.getTranslations()[request.locale!!] != null){
+                entity.removeTranslation(request.locale)
+            }
+            entity.setTranslations(request.locale, translation)
+        }
+        return entity;
     }
 
 }
 
-interface Servicable<E>{
+interface Servicable<E: EntityModel, T:Translatable>{
     fun save(obj: E)
     fun findById(id: Long): Optional<E>
     fun all(pagingAndSorting: PagingSupport?): Page<E>?
     fun remove(id: Long)
 }
+

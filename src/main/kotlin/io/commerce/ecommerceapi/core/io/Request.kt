@@ -7,13 +7,12 @@ import javax.validation.constraints.NotBlank
 abstract class Request<E: EntityModel>(
     val id: Long? = null,
 ) {
-    abstract fun fill() : E
+    abstract fun fill(e: E?) : E
 }
 
 abstract class TranslatableRequest<E:EntityModel,T:Translatable>(
-    @get:NotBlank
-    val locale: String = "ka" /* todo default locale from settings or session */
+    val locale: String? = null
 ): Request<E>(){
-    abstract fun fillTranslatable(e: E): T
+    abstract fun fillTranslatable(e: E): T?
 }
 

@@ -12,6 +12,7 @@ enum class AttributeTypes{
     DATETIME_PICKER,CUSTOM_FIELD
 }
 
+
 @Entity
 @Table(name = "attributes")
 class Attribute(
@@ -30,10 +31,11 @@ class Attribute(
 
 ) : Model<AttributeTranslations>(){
 
+
     override fun getTranslations(): Map<String, AttributeTranslations> = localizations
 
-    override fun setTranslations(locale: String, translatable: Translatable) {
-        this.localizations += mutableMapOf(locale to translatable as AttributeTranslations)
+    override fun setTranslations(locale: String, translatable: AttributeTranslations) {
+        this.localizations += mutableMapOf(locale to translatable)
     }
 
     override fun removeTranslation(locale: String) {
@@ -55,6 +57,6 @@ class AttributeTranslations(
     var description: String,
 
 ): Translatable(){
-    companion object
+
 }
 
