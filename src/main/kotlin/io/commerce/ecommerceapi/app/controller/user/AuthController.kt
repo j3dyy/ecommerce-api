@@ -41,6 +41,7 @@ class AuthController(
         val roles = userDetails.authorities.map { item -> item!!.authority  } as List<String>
 
         return ResponseEntity.ok(
+
             JwtResponse(
                 jwt,
                 userDetails.getId()!!,
@@ -59,7 +60,6 @@ class AuthController(
         if (userRepository.existsByEmail(request.email)){
             return ResponseEntity.badRequest().body(MessageResponse("email must be unique", "error"))
         }
-
         val user = User(request.email,request.username,passwordEncoder.encode(request.password))
 
         val strRoles = mutableSetOf<String>("ADMIN")

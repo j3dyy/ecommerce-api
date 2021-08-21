@@ -1,5 +1,6 @@
 package io.commerce.ecommerceapi.app.models.user
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.hibernate.Hibernate
 import javax.persistence.*
 import javax.validation.constraints.Email
@@ -15,6 +16,7 @@ import javax.validation.constraints.Size
 class User (
     var email : String,
     var username : String,
+    @JsonIgnore
     var password : String,
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -22,6 +24,7 @@ class User (
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "role_id")]
     )
+    @JsonIgnore
     var roles : Set<Role> = mutableSetOf(),
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
