@@ -6,7 +6,10 @@ import io.commerce.ecommerceapi.app.payload.request.SignupRequest
 import io.commerce.ecommerceapi.app.payload.response.JwtResponse
 import io.commerce.ecommerceapi.app.payload.response.MessageResponse
 import io.commerce.ecommerceapi.app.service.user.UserDetailsImpl
+import io.commerce.ecommerceapi.app.service.user.UserService
 import io.commerce.ecommerceapi.configuration.security.jwt.JwtUtils
+import io.commerce.ecommerceapi.core.io.BasicController
+import io.commerce.ecommerceapi.core.io.presenter.RequestResult
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -26,8 +29,9 @@ class AuthController(
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtUtils: JwtUtils
-) {
+    private val jwtUtils: JwtUtils,
+    private val userService: UserService
+): BasicController<UserService>(userService) {
 
     @PostMapping("/signin")
     fun authenticateUser(@Valid @RequestBody loginRequest: LoginRequest) : ResponseEntity<JwtResponse> {
@@ -53,20 +57,20 @@ class AuthController(
     }
 
     @PostMapping("/signup")
-    fun signUp(@Valid @RequestBody request: SignupRequest): ResponseEntity<MessageResponse>{
+    fun signUp(@Valid @RequestBody request: SignupRequest): RequestResult<String>{
         if (userRepository.existsByUsername(request.username)){
-            return ResponseEntity.badRequest().body(MessageResponse("username must be unique", "error"))
+            return RequestResult.Error("Username must be unique")
         }
         if (userRepository.existsByEmail(request.email)){
-            return ResponseEntity.badRequest().body(MessageResponse("email must be unique", "error"))
+            return RequestResult.Error("Email must be unique")
         }
         val user = User(request.email,request.username,passwordEncoder.encode(request.password))
 
-        val strRoles = mutableSetOf<String>("ADMIN")
+        val strRoles = mutableSetOf("ADMIN")
         val role = hashSetOf<Role>()
         role.add(Role(CommerceRoles.ROLE_USER))
         user.roles = role
         userRepository.save(user)
-        return ResponseEntity.ok(MessageResponse("User Registered Now Signin", "success"))
+        return RequestResult.Success("User Registered Now Signin")
     }
 }

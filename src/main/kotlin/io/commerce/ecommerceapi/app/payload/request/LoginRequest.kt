@@ -18,9 +18,9 @@ data class SignupRequest(
     @get:Size(min = 3, max = 50)
     val username : String,
 
-    @get:NotBlank
     @get:Size(min = 3, max = 50)
     @get:Email
+    @get:NotBlank
     val email : String,
 
     @get:NotBlank
