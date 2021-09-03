@@ -8,6 +8,7 @@ enum class SortDirections{
     ASCENDING,DESCENDING
 }
 
+
 data class Paging(
     @get:NotBlank
     @get:Min(0)
@@ -23,5 +24,12 @@ data class Sorting(
 
 data class PagingSupport(
     val paging: Paging?,
-    val sorting: Sorting?
+    val sorting: Sorting?,
+)
+
+data class PagingTranslationSupport(
+    val paging: Paging?,
+    val sorting: Sorting?,
+    @get:NotBlank
+    val locale: String
 )

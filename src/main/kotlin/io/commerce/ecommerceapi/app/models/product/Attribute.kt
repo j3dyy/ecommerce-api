@@ -23,25 +23,16 @@ class Attribute(
 
     @OneToMany(
         mappedBy = "attribute",
-        cascade = [CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH]
+        cascade = [CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH],
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
     )
     @MapKey(name = "localizedId.locale")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+    @JsonIgnore
     var localizations: Map<String,AttributeTranslations> = mutableMapOf()
 
-) : Model<AttributeTranslations>(){
-
-
-    override fun getTranslations(): Map<String, AttributeTranslations> = localizations
-
-    override fun setTranslations(locale: String, translatable: AttributeTranslations) {
-        this.localizations += mutableMapOf(locale to translatable)
-    }
-
-    override fun removeTranslation(locale: String) {
-        this.localizations -= locale
-    }
-}
+) : Model<AttributeTranslations>()
 
 @Entity
 @Table(name = "attribute_translations")
@@ -50,7 +41,6 @@ class AttributeTranslations(
     @ManyToOne
     @MapsId("id")
     @JoinColumn(name = "id")
-    @JsonIgnore
     var attribute: Attribute,
 
     var name: String,

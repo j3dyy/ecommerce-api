@@ -1,6 +1,7 @@
 package io.commerce.ecommerceapi.core.db
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import io.commerce.ecommerceapi.app.models.product.CategoryTranslation
 import java.io.Serializable
 import java.sql.Timestamp
 import javax.persistence.*
@@ -30,18 +31,13 @@ abstract class Model<E: Translatable> (
      @Version
      var version: Int = 1,
 
-): Sortable(){
-
-     @JsonIgnore
-     abstract fun getTranslations(): Map<String,E>
-     abstract fun setTranslations(locale: String, translatable: E)
-     abstract fun removeTranslation(locale: String)
-}
+): Sortable()
 
 
 @MappedSuperclass
 open class Translatable(
      @EmbeddedId
+     @JsonIgnore
      var localizedId: LocalizedId = LocalizedId("ka")
 ) {
 

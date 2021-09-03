@@ -1,11 +1,11 @@
 package io.commerce.ecommerceapi.core
 
 import io.commerce.ecommerceapi.app.payload.request.PagingSupport
-import io.commerce.ecommerceapi.core.db.EntityModel
-import io.commerce.ecommerceapi.core.db.Model
-import io.commerce.ecommerceapi.core.db.Translatable
+import io.commerce.ecommerceapi.app.payload.request.PagingTranslationSupport
+import io.commerce.ecommerceapi.core.db.*
 import io.commerce.ecommerceapi.core.io.Request
 import io.commerce.ecommerceapi.core.io.TranslatableRequest
+import io.commerce.ecommerceapi.core.io.presenter.RequestResult
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -13,7 +13,7 @@ import org.springframework.data.repository.PagingAndSortingRepository
 import java.util.*
 import javax.transaction.Transactional
 
-abstract class BaseService< R:PagingAndSortingRepository<E,Long>, E: EntityModel, T:Translatable>(
+abstract class BaseService< R:BaseRepository<E>, E: EntityModel, T:Translatable>(
     protected open val repository: R,
 ): Servicable<E,T> {
 
@@ -23,7 +23,7 @@ abstract class BaseService< R:PagingAndSortingRepository<E,Long>, E: EntityModel
 
     override fun findById(id: Long) = repository.findById(id)
 
-    override fun all(pagingAndSorting: PagingSupport?): Page<E>? {
+    override fun all(pagingAndSorting: PagingSupport): Page<E>? {
         var pageable = PageRequest.of(0,40, Sort.by("id").descending())
         pagingAndSorting?.paging?.let {
             pageable = PageRequest.of(
@@ -44,13 +44,25 @@ abstract class BaseService< R:PagingAndSortingRepository<E,Long>, E: EntityModel
 }
 
 open class BaseTranslatableService<
-        TR: PagingAndSortingRepository<T,Long>, T:Translatable,
-        R: PagingAndSortingRepository<E,Long>, E:Model<T>,
+        TR: BaseTranslationRepository<T>, T:Translatable,
+        R: BaseRepository<E>, E:Model<T>,
 >(
-    override val repository: R
+    override val repository: R,
+    val translatableRepository: TR
 ) : BaseService<R,E,T>(repository) {
 
-    @Transactional
+    override fun all(pagingAndSorting: PagingTranslationSupport): Page<T>? {
+        var pageable = PageRequest.of(0,40, Sort.by("id").descending())
+        pagingAndSorting?.paging?.let {
+            pageable = PageRequest.of(
+                it.page,
+                it.size,
+                Sort.by("id").descending()
+            )
+        }
+        return translatableRepository.findAllByLocale(pagingAndSorting.locale,pageable)
+    }
+
     open fun add(request: TranslatableRequest<E, T>){
         var entity: E = request.fill(null)
 
@@ -59,21 +71,14 @@ open class BaseTranslatableService<
                 entity = request.fill(it)
             }
         }
-        entity = updateTranslations(entity,request)
-        repository.save(entity)
+        entity = repository.save(entity)
+        updateTranslations(entity,request)
     }
 
-
-    private fun updateTranslations(entity: E, request: TranslatableRequest<E,T>): E{
-        var translation = request.fillTranslatable(entity)
-
-        if (translation != null){
-            if (entity.getTranslations()[request.locale!!] != null){
-                entity.removeTranslation(request.locale)
-            }
-            entity.setTranslations(request.locale, translation)
+    private fun updateTranslations(entity: E, request: TranslatableRequest<E,T>) {
+        request.fillTranslatable(entity)?.let {
+            translatableRepository.save(it)
         }
-        return entity;
     }
 
 }
@@ -81,7 +86,8 @@ open class BaseTranslatableService<
 interface Servicable<E: EntityModel, T:Translatable>{
     fun save(obj: E)
     fun findById(id: Long): Optional<E>
-    fun all(pagingAndSorting: PagingSupport?): Page<E>?
+    fun all(pagingAndSorting: PagingSupport): Page<E>?
+    fun all(pagingAndSorting: PagingTranslationSupport): Page<T>?
     fun remove(id: Long)
 }
 

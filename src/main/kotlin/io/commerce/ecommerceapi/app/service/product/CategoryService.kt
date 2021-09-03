@@ -18,6 +18,10 @@ import org.springframework.stereotype.Service
 @Service
 class CategoryService(
     val categoryRepository: CategoryRepository,
-): BaseTranslatableService<CategoryTranslationRepository,CategoryTranslation,CategoryRepository,Category>(categoryRepository) {
+    val categoryTranslationRepository: CategoryTranslationRepository
+): BaseTranslatableService<CategoryTranslationRepository,CategoryTranslation,CategoryRepository,Category>(
+    categoryRepository,
+    categoryTranslationRepository
+) {
 
 }

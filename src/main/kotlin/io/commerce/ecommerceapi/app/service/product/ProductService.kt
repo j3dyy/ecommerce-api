@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class ProductService(
-    private val productRepository: ProductRepository
-): BaseTranslatableService<ProductTranslationRepository,ProductTranslations,ProductRepository,Product>(productRepository) {
-
-
-
-}
+    private val productRepository: ProductRepository,
+    private val productTranslationRepository: ProductTranslationRepository
+): BaseTranslatableService<ProductTranslationRepository,ProductTranslations,ProductRepository,Product>(
+    productRepository,
+    productTranslationRepository
+)

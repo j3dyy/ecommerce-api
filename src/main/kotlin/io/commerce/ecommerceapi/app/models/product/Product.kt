@@ -23,25 +23,15 @@ class Product(
 
     @OneToMany(
         mappedBy = "product",
-        cascade = [CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH]
+        cascade = [CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH],
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
     )
     @MapKey(name = "localizedId.locale")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     var localizations: Map<String,ProductTranslations> = mutableMapOf()
 
-): Model<ProductTranslations>() {
-
-    override fun getTranslations(): Map<String, ProductTranslations> = localizations
-
-    override fun setTranslations(locale: String, translatable: ProductTranslations) {
-        this.localizations += mutableMapOf(locale to translatable)
-    }
-
-    override fun removeTranslation(locale: String) {
-        this.localizations -= locale
-    }
-
-}
+): Model<ProductTranslations>()
 
 
 @Entity

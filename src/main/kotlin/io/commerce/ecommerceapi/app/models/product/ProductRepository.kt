@@ -1,10 +1,12 @@
 package io.commerce.ecommerceapi.app.models.product
 
+import io.commerce.ecommerceapi.core.db.BaseRepository
+import io.commerce.ecommerceapi.core.db.BaseTranslationRepository
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ProductRepository: PagingAndSortingRepository<Product,Long>
+interface ProductRepository: BaseRepository<Product>
 
 @Repository
-interface ProductTranslationRepository: PagingAndSortingRepository<ProductTranslations, Long>
+interface ProductTranslationRepository: BaseTranslationRepository<ProductTranslations>

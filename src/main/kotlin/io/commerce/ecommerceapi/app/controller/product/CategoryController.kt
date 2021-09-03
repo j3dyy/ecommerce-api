@@ -14,6 +14,7 @@ import javax.validation.Valid
 class CategoryController(
     val categoryService: CategoryService
 ): CrudController<CategoryService,Category,CategoryTranslation>(categoryService){
+
     @PutMapping
     fun create(@Valid @RequestBody request: AddCategory) =  service.add(request)
 }

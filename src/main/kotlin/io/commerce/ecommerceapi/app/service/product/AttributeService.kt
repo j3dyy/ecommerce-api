@@ -17,7 +17,8 @@ class AttributeService(
     val attributeRepository: AttributeRepository,
     val attributeTranslationRepository: AttributeTranslationRepository
 ): BaseTranslatableService<AttributeTranslationRepository,AttributeTranslations,AttributeRepository,Attribute>(
-    attributeRepository
+    attributeRepository,
+    attributeTranslationRepository
 ) {
 
 

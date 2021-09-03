@@ -1,6 +1,7 @@
 package io.commerce.ecommerceapi.core.io
 
 import io.commerce.ecommerceapi.app.payload.request.PagingSupport
+import io.commerce.ecommerceapi.app.payload.request.PagingTranslationSupport
 import io.commerce.ecommerceapi.core.Servicable
 import io.commerce.ecommerceapi.core.db.EntityModel
 import io.commerce.ecommerceapi.core.db.Translatable
@@ -49,10 +50,10 @@ open class CrudController<S: Servicable<E,T>, E: EntityModel, T: Translatable>(
 ): BasicController<S>(service) {
 
 
-
     @GetMapping
-    fun list(@Valid @RequestBody pagingAndSorting: PagingSupport?): RequestResult<E> {
-        service.all(pagingAndSorting)?.let {
+    fun list(@Valid @RequestBody pagingTranslationSupport: PagingTranslationSupport): RequestResult<E> {
+        response = RequestResult.Loading()
+        service.all(pagingTranslationSupport)?.let {
             response = RequestResult.Success(it)
         }
         return response
@@ -60,6 +61,7 @@ open class CrudController<S: Servicable<E,T>, E: EntityModel, T: Translatable>(
 
     @GetMapping("/{id}")
     fun show(@PathVariable id: Long): RequestResult<E> {
+        response = RequestResult.Loading()
         service.findById(id).ifPresent {
             response = RequestResult.Success(it)
         }

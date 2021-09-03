@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean
 
 
@@ -14,7 +15,8 @@ import org.springframework.context.annotation.Bean
     exclude = [SecurityAutoConfiguration::class]
 )
 @EnableConfigurationProperties(StorageProperties::class)
-class EcommerceApiApplication{
+class EcommerceApiApplication  {
+
     @Bean
     fun init(fileService: FileService): CommandLineRunner? {
         return CommandLineRunner { args: Array<String?>? ->
