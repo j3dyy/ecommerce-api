@@ -6,6 +6,8 @@ build/
 !**/src/test/**/build/
 /src/resource/application.properties
 
+.envi
+
 ### STS ###
 .apt_generated
 .classpath

@@ -50,7 +50,7 @@ open class CrudController<S: Servicable<E,T>, E: EntityModel, T: Translatable>(
 ): BasicController<S>(service) {
 
 
-    @GetMapping
+    @PostMapping
     fun list(@Valid @RequestBody pagingTranslationSupport: PagingTranslationSupport): RequestResult<E> {
         response = RequestResult.Loading()
         service.all(pagingTranslationSupport)?.let {
