@@ -51,6 +51,7 @@ open class BaseTranslatableService<
     val translatableRepository: TR
 ) : BaseService<R,E,T>(repository) {
 
+
     override fun all(pagingAndSorting: PagingTranslationSupport): Page<T>? {
         var pageable = PageRequest.of(0,40, Sort.by("id").descending())
         pagingAndSorting?.paging?.let {
@@ -61,6 +62,10 @@ open class BaseTranslatableService<
             )
         }
         return translatableRepository.findAllByLocale(pagingAndSorting.locale,pageable)
+    }
+
+    override fun showTranslation(id: Long, locale: String): T? {
+        return translatableRepository.findByLocale(id,locale);
     }
 
     open fun add(request: TranslatableRequest<E, T>){
@@ -81,6 +86,8 @@ open class BaseTranslatableService<
         }
     }
 
+
+
 }
 
 interface Servicable<E: EntityModel, T:Translatable>{
@@ -88,6 +95,7 @@ interface Servicable<E: EntityModel, T:Translatable>{
     fun findById(id: Long): Optional<E>
     fun all(pagingAndSorting: PagingSupport): Page<E>?
     fun all(pagingAndSorting: PagingTranslationSupport): Page<T>?
+    fun showTranslation(id: Long, locale: String): T?
     fun remove(id: Long)
 }
 

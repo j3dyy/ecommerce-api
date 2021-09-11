@@ -15,6 +15,10 @@ interface BaseRepository<T>: PagingAndSortingRepository<T,Long> {
 @NoRepositoryBean
 interface BaseTranslationRepository<T>: PagingAndSortingRepository<T,Long>{
 
-    @Query("SELECT e FROM #{#entityName} as e  where e.localizedId.locale = :locale")
+    @Query("SELECT e FROM #{#entityName} as e  WHERE e.localizedId.locale = :locale")
     fun findAllByLocale(@Param("locale") locale: String, pageable: Pageable): Page<T>
+
+    @Query("SELECT e FROM #{#entityName} as e WHERE e.localizedId.id = :id AND  e.localizedId.locale = :locale")
+    fun findByLocale(@Param("id") id: Long, @Param("locale") locale: String): T?
+
 }

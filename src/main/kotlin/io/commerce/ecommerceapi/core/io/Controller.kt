@@ -68,6 +68,20 @@ open class CrudController<S: Servicable<E,T>, E: EntityModel, T: Translatable>(
         return response
     }
 
+    @GetMapping("/{id}/{locale}")
+    fun showTranslation(@PathVariable id: Long, @PathVariable(name= "locale") locale: String): RequestResult<E> {
+        response = RequestResult.Loading()
+        service.showTranslation(id, locale).let {
+            response = if (it != null) {
+                RequestResult.Success(it)
+            }else{
+                ///todo translation here
+                RequestResult.Error("no data with this translation: $locale and id: $id")
+            }
+        }
+        return response
+    }
+
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long) {
         service.remove(id)

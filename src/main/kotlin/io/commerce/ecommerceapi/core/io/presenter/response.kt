@@ -10,7 +10,7 @@ sealed class RequestResult<T>(
 
     class Success<T>(data: Any): RequestResult<T>(data)
 
-    class Error<T>(data: T): RequestResult<T>(data, error = true)
+    class Error<T>(data: Any?): RequestResult<T>(data, code = 9000, error = true)
 
     class Loading<T>: RequestResult<T>()
 }
