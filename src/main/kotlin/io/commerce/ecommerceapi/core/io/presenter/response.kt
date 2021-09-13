@@ -8,7 +8,7 @@ sealed class RequestResult<T>(
     val error: Boolean = false
 ){
 
-    class Success<T>(data: Any): RequestResult<T>(data)
+    class Success<T>(data: Any, message: String? = ""): RequestResult<T>(data, message)
 
     class Error<T>(data: Any?): RequestResult<T>(data, code = 9000, error = true)
 

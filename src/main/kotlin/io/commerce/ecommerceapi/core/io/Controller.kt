@@ -1,12 +1,13 @@
 package io.commerce.ecommerceapi.core.io
 
-import io.commerce.ecommerceapi.app.payload.request.PagingSupport
 import io.commerce.ecommerceapi.app.payload.request.PagingTranslationSupport
 import io.commerce.ecommerceapi.core.Servicable
 import io.commerce.ecommerceapi.core.db.EntityModel
 import io.commerce.ecommerceapi.core.db.Translatable
 import io.commerce.ecommerceapi.core.io.presenter.RequestResult
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -40,6 +41,11 @@ open class BasicController<S>(
     @ExceptionHandler(value = [HttpMessageNotReadableException::class])
     fun handleMessageNotReadable(msgNor: HttpMessageNotReadableException): RequestResult.Error<String?> {
         return RequestResult.Error(msgNor.message)
+    }
+
+    @ExceptionHandler(value = [DataIntegrityViolationException::class])
+    open fun handlePreconditionFailed(exception: DataIntegrityViolationException): RequestResult.Error<String?> {
+        return RequestResult.Error(exception.message)
     }
 
 }

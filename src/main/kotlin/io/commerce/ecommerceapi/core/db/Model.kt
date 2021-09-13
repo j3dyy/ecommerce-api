@@ -25,6 +25,11 @@ open class Sortable(
      var sort: Int? = 0
 ): EntityModel()
 
+@MappedSuperclass
+open class ActivableModel(
+     var is_active: Boolean = true,
+     var is_actived_at: Timestamp? = null
+): EntityModel()
 
 @MappedSuperclass
 abstract class Model<E: Translatable> (

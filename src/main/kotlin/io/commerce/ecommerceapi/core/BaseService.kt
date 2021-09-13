@@ -13,6 +13,7 @@ import org.springframework.data.repository.PagingAndSortingRepository
 import java.util.*
 import javax.transaction.Transactional
 
+
 abstract class BaseService< R:BaseRepository<E>, E: EntityModel, T:Translatable>(
     protected open val repository: R,
 ): Servicable<E,T> {
